@@ -38,7 +38,12 @@ def predict():
   filename = secure_filename(file_draw)
   print("*** filename ***")
   print(filename)
-  df_raw = pd.read_csv(filename)
+  outdir = './static'/filename
+  print("*** Outdir ***")
+  print(outdir)
+  if not os.path.exists(outdir):
+      os.makedirs(outdir, exist_ok=True)
+  df_raw = pd.read_csv(outdir)
   df_res, df_phone = preprocessing(df_raw, './static')
   print("*** df_res ***")
   print(df_res.head())
