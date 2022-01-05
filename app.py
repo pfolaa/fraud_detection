@@ -38,7 +38,7 @@ def predict():
   filename = secure_filename(file_draw)
   print("*** filename ***")
   print(filename)
-  outdir = './static'/filename
+  outdir = f'./static/'+filename
   print("*** Outdir ***")
   print(outdir)
   if not os.path.exists(outdir):
