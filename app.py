@@ -33,7 +33,11 @@ def list_folders():
 @app.route("/predict", methods=['POST', 'GET'])
 def predict():  
   file_draw = request.files["filename"].filename
+  print("*** file draw ***")
+  print(file_draw)
   filename = secure_filename(file_draw)
+  print("*** filename ***")
+  print(filename)
   df_raw = pd.read_csv(filename)
   df_res, df_phone = preprocessing(df_raw, './static')
   print("*** df_res ***")
@@ -55,5 +59,4 @@ def predict():
 
 # Launch Flask application
 if __name__ == "__main__":
-    #app.run(debug=True)
     app.run(debug=True, host="0.0.0.0", port=8080)
