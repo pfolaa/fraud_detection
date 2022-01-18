@@ -25,10 +25,21 @@ standard_scaler = pickle.load(open("./static/standard_scaler.pkl", "rb"))
 def index():
   return render_template('index.html')
 
-@app.route("/list_files")
-def list_folders():
-  print(str(glob.glob(os.path.join(".\static\*"))))
-  return {}
+@app.route("/test_predict")
+def test_predict():
+  outdir = f'./static/x_test.csv'
+  df_raw = pd.read_csv(outdir)
+  print("***df_raw**")
+  print(df_raw.head(10))
+  #ss_transformed = standard_scaler.transform(np.array(list(df_raw.values)))
+  prediction = model.predict(np.array(list(df_raw.values)))
+  df_raw['Prediction'] = prediction
+  print("***prediction**")
+  print(prediction)
+  print("***anomalies**")
+  print(df_raw[df_raw['Prediction']==-1])
+  return {}  
+
 
 @app.route("/predict", methods=['POST', 'GET'])
 def predict():  
@@ -51,15 +62,28 @@ def predict():
   print(df_phone.head())
   pdList = [df_phone, df_res] # list of DF 
   df_final = pd.concat(pdList, axis=1)
-  ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
-  prediction = model.predict(ss_transformed)
+  #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
+  #prediction = model.predict(ss_transformed)
+  prediction = model.predict(np.array(list(df_res.values)))
   print("Prediction: ")
   print(prediction)
   df_final["Prediction"] = prediction
   print("DF Final")
   print(df_final.head())
-  return jsonify({'response': str(prediction),
-                'Phone_Number': str(df_phone['Phone_Number'].values.tolist())})
+  print("*** anomalies ****")
+  print(df_final[df_final['Prediction'] == -1])
+  data = []
+  data_res = {}
+  for index, row in df_final.iterrows():
+    data_temp = {}
+    data_temp["prediction"] = row["Prediction"]
+    data_temp["Phone_number"] = row["Phone_Number"]
+    data.append(data_temp)
+
+  data_res["result"] = data
+  json_data_str = json.dumps(str(data_res))
+  json_data = json.loads(json_data_str) 
+  return json_data
 
 
 # Launch Flask application
