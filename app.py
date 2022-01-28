@@ -58,7 +58,7 @@ def connect_to_s3():
               )
   
   # upload files
-  data_files_folder = os.path.join(os.getcwd(), 'Projet python')
+  data_files_folder = os.path.join(os.getcwd(), 'static')
   for file in os.listdir(data_files_folder):
     if '.csv' in file: 
       try:
@@ -74,6 +74,9 @@ def connect_to_s3():
         print(e)
       except Exception as e:
         print(e)
+    
+  #Download file
+  #client_s3.download_file(bucket_name, '', os.path.join('./'))
 
   return {}
 
