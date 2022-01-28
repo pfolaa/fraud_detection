@@ -197,7 +197,7 @@ def preprocessing(df_raw, data_folder) :
     for phoneNumber in tqdm(all_users_phone_number):
         df_phone_number = df_final[df_final['Phone_Number'] == phoneNumber]
         df_phone_number.to_csv(f'{outdir_2}/{phoneNumber}.csv', index=None)
-        client_s3.upload_file(os.path.join(outdir_2, '{phoneNumber}.csv'), bucket_name, '{phoneNumber}.csv')
+        #client_s3.upload_file(os.path.join(outdir_2, '{phoneNumber}.csv'), bucket_name, '{phoneNumber}.csv')
         # repertoire temp dont le nom doit changer selon qu'on fait l'entrainement ou la prédiction
         ### se déplacer dans le dossier contenant les dataframes de chaque utilisateur
 
@@ -256,6 +256,7 @@ def preprocessing(df_raw, data_folder) :
     print('le chemin 4 est : '+outdir_4)
     fullname_4 = os.path.join(outdir_4, outname_4) 
     print('chemin fullname_4: '+fullname_4)
+    client_s3.upload_file(os.path.join(outdir_4, outname_4), bucket_name, outname_4)
     ### Export DF
     X_train_with_operations_per_minute.to_csv(fullname_4, index=None)
     return X_train_with_operations_per_minute, df_phone_number_with_operations_per_minute
