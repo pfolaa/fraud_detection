@@ -179,7 +179,7 @@ def preprocessing(df_raw, data_folder) :
     print('chemin fullname_1: '+fullname_1)
     ### Export DF
     df_final.to_csv(fullname_1, index=None)
-    client_s3.upload_file(os.path.join(outdir_1, df_final), bucket_name, df_final)
+    #client_s3.upload_file(os.path.join(outdir_1, df_final), bucket_name, df_final)
 
     all_users_phone_number = get_unique_numbers_DF(df_final)
     all_df_phone_number = [] # to get list of dataframes
