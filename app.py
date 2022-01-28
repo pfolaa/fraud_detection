@@ -22,6 +22,16 @@ app = Flask(__name__)
 model = pickle.load(open("./static/model.pkl", "rb"))
 standard_scaler = pickle.load(open("./static/standard_scaler.pkl", "rb"))
 
+access_key = 'AKIAWPXBUC7KKNTIR7UI'
+secret_access_key =  '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'
+bucket_name = 'dct-aws-cloud-labs-pa'
+
+client_s3 = boto3.client(
+              's3',
+              aws_access_key_id = access_key,
+              aws_secret_access_key = secret_access_key
+            )
+
 #Home page
 @app.route("/")
 def index():
@@ -46,23 +56,15 @@ def get_url():
 
 @app.route("/connect_s3")
 def connect_to_s3():
-
-  access_key = 'AKIAWPXBUC7KKNTIR7UI'
-  secret_access_key =  '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'
-  bucket_name = 'dct-aws-cloud-labs-pa'
-
-  client_s3 = boto3.client(
-                's3',
-                aws_access_key_id = access_key,
-                aws_secret_access_key = secret_access_key
-              )
   
   # upload files
-  data_files_folder = os.path.join(os.getcwd(), 'static')
+  data_files_folder = os.path.join(os.getcwd(), 'static/')
   for file in os.listdir(data_files_folder):
     if '.csv' in file: 
       try:
+        print('data_files_folder: '+data_files_folder)
         print('uploading file {0}...'+format(file))
+        print('join files: '+os.path.join(data_files_folder, file))
         client_s3.upload_file(
            os.path.join(data_files_folder, file),
            bucket_name,
@@ -86,6 +88,12 @@ def predict():
   file_draw = request.files["filename"].filename
   print("*** file draw ***")
   print(file_draw)
+  data_files_folder = os.path.join(os.getcwd(), 'static/')
+  client_s3.upload_file(
+           os.path.join(data_files_folder, file_draw),
+           bucket_name,
+           file_draw
+        )
   filename = secure_filename(file_draw)
   print("*** filename ***")
   print(filename)
