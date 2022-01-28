@@ -1,3 +1,4 @@
+import imp
 from flask import Flask, request, jsonify, render_template
 import pickle
 import numpy as np
@@ -12,7 +13,7 @@ import ast
 import json
 from os import chdir as cd
 import boto3
-
+from botocore.exceptions import ClientError
 
 # start Flask api
 app = Flask(__name__)
@@ -41,6 +42,40 @@ def get_url():
       }
   )
   return url  
+
+
+@app.route("/connect_s3")
+def connect_to_s3():
+
+  access_key = 'AKIAWPXBUC7KKNTIR7UI'
+  secret_access_key =  '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'
+  bucket_name = 'dct-aws-cloud-labs-pa'
+
+  client_s3 = boto3.client(
+                's3',
+                aws_access_key_id = access_key,
+                aws_secret_access_key = secret_access_key
+              )
+  
+  # upload files
+  data_files_folder = os.path.join(os.getcwd(), 'Projet python')
+  for file in os.listdir(data_files_folder):
+    if '.csv' in file: 
+      try:
+        print('uploading file {0}...'+format(file))
+        client_s3.upload_file(
+           os.path.join(data_files_folder, file),
+           bucket_name,
+           file
+        )
+
+      except ClientError as e:
+        print('credential is incorrect')
+        print(e)
+      except Exception as e:
+        print(e)
+
+  return {}
 
 
 @app.route("/predict", methods=['POST', 'GET'])
