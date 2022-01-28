@@ -171,7 +171,7 @@ def preprocessing(df_raw, data_folder) :
     
     # charger le fichier dans s3
     upload_file_key_1 = outdir_1+ outname_1
-    client_s3.upload_file(outdir_1, bucket_name, outname_1)
+    client_s3.upload_file(os.path.join(outdir_1, outname_1), bucket_name, outname_1)
 
     if not os.path.exists(outdir_1):
         os.makedirs(outdir_1, exist_ok=True)
@@ -196,7 +196,7 @@ def preprocessing(df_raw, data_folder) :
     for phoneNumber in tqdm(all_users_phone_number):
         df_phone_number = df_final[df_final['Phone_Number'] == phoneNumber]
         df_phone_number.to_csv(f'{outdir_2}/{phoneNumber}.csv', index=None)
-        client_s3.upload_file(f'{outdir_2}/{phoneNumber}.csv', bucket_name, phoneNumber)
+        #client_s3.upload_file(f'{outdir_2}/{phoneNumber}.csv', bucket_name, phoneNumber)
         # repertoire temp dont le nom doit changer selon qu'on fait l'entrainement ou la prédiction
         ### se déplacer dans le dossier contenant les dataframes de chaque utilisateur
 
