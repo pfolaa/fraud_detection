@@ -88,6 +88,7 @@ def predict():
   file_draw = request.files["filename"].filename
   print("*** file draw ***")
   print(file_draw)
+  print('getcwd(): '+os.getcwd())
   data_files_folder = os.path.join(os.getcwd(), 'static/')
   client_s3.upload_file(
            os.path.join(data_files_folder, file_draw),
