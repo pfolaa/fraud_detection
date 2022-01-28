@@ -69,6 +69,8 @@ def difference_ts(date_in_timestamp):
 
 def preprocessing(df_raw, data_folder) : 
 
+    access_key = 'AKIAWPXBUC7KA2LJYNRN'
+    secret_access_key = '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'
     client = boto3.client('s3', 
                         aws_access_key_id=access_key,
                         aws_secret_access_key=secret_access_key)
