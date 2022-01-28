@@ -49,7 +49,6 @@ from preproc import subfilter_DF
 from preproc import concatenate_info_DF
 from preproc import get_unique_numbers_DF
 from preproc import save_info_per_phone_number_DF
-from secrets import access_key, secret_access_key
 
 
 
