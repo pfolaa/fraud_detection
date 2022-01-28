@@ -3,6 +3,7 @@ import os
 import glob
 import glob2
 import tqdm
+import boto3
 import json
 import pandas as pd
 import numpy as np
@@ -48,6 +49,7 @@ from preproc import subfilter_DF
 from preproc import concatenate_info_DF
 from preproc import get_unique_numbers_DF
 from preproc import save_info_per_phone_number_DF
+from secrets import access_key, secret_access_key
 
 
 
@@ -66,6 +68,11 @@ def difference_ts(date_in_timestamp):
 #print("Processing Loan payload")
 
 def preprocessing(df_raw, data_folder) : 
+
+    client = boto3.client('s3', 
+                        aws_access_key_id=access_key,
+                        aws_secret_access_key=secret_access_key)
+
     df_raw['text'].fillna('', inplace=True)
     loan_payload = df_raw[df_raw['text'].str.contains('LOAN PAYLOAD')]
     df_loan_payload = parse_row_LOAN_PAYLOAD(loan_payload)
@@ -156,6 +163,12 @@ def preprocessing(df_raw, data_folder) :
     outname_1 = 'nirra_log_bot_final.csv'
     outdir_1 = f'{data_folder}/df_final/'
     print('le chemin est: '+outdir_1)
+    
+    # charger le fichier dans s3
+    upload_file_bucket = 'paulin_s3'
+    upload_file_key_1 = outdir_1+ outname_1
+    client.upload_file(outname_1, upload_file_bucket, upload_file_key_1)
+
     if not os.path.exists(outdir_1):
         os.makedirs(outdir_1, exist_ok=True)
     fullname_1 = os.path.join(outdir_1, outname_1) 
@@ -171,12 +184,15 @@ def preprocessing(df_raw, data_folder) :
 
     ### Sauvegarder sur le disque les dataframes de chaque utilisateur
     outdir_2 = f'{data_folder}/files_phone_number/'
+    #upload_file_key_2 = outdir_2+ outname_1
+    #client.upload_file(outname_1, upload_file_bucket, upload_file_key_1)
     if not os.path.exists(outdir_2):
         os.makedirs(outdir_2, exist_ok=True)
     print('le chemin 2 est : '+outdir_2)
     for phoneNumber in tqdm(all_users_phone_number):
         df_phone_number = df_final[df_final['Phone_Number'] == phoneNumber]
         df_phone_number.to_csv(f'{outdir_2}/{phoneNumber}.csv', index=None)
+        client.upload_file(f'{outdir_2}/{phoneNumber}.csv', upload_file_bucket, phoneNumber)
         # repertoire temp dont le nom doit changer selon qu'on fait l'entrainement ou la prédiction
         ### se déplacer dans le dossier contenant les dataframes de chaque utilisateur
 

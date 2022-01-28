@@ -11,6 +11,7 @@ import glob
 import ast
 import json
 from os import chdir as cd
+import boto3
 
 
 # start Flask api
@@ -25,20 +26,21 @@ standard_scaler = pickle.load(open("./static/standard_scaler.pkl", "rb"))
 def index():
   return render_template('index.html')
 
-@app.route("/test_predict")
-def test_predict():
-  outdir = f'./static/x_test.csv'
-  df_raw = pd.read_csv(outdir)
-  print("***df_raw**")
-  print(df_raw.head(10))
-  #ss_transformed = standard_scaler.transform(np.array(list(df_raw.values)))
-  prediction = model.predict(np.array(list(df_raw.values)))
-  df_raw['Prediction'] = prediction
-  print("***prediction**")
-  print(prediction)
-  print("***anomalies**")
-  print(df_raw[df_raw['Prediction']==-1])
-  return {}  
+@app.route("/get_url")
+def get_url():
+    # Get the service client.
+  s3 = boto3.client('s3')
+
+  url = 'http://s3-us-east-1.amazonaws.com/dct-aws-cloud-labs-pa/nirra-log-bot/2021-03-17.json'
+  # Generate the URL to get 'key-name' from 'bucket-name'
+  url_old = s3.generate_presigned_url(
+      ClientMethod='get_object',
+      Params={
+          'Bucket': '<bucket-name>',
+          'Key': '<key-name>'
+      }
+  )
+  return url  
 
 
 @app.route("/predict", methods=['POST', 'GET'])
