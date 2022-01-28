@@ -68,11 +68,15 @@ def difference_ts(date_in_timestamp):
 
 def preprocessing(df_raw, data_folder) : 
 
-    access_key = 'AKIAWPXBUC7KA2LJYNRN'
-    secret_access_key = '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'
-    client = boto3.client('s3', 
-                        aws_access_key_id=access_key,
-                        aws_secret_access_key=secret_access_key)
+    access_key = 'AKIAWPXBUC7KKNTIR7UI'
+    secret_access_key =  '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'
+    bucket_name = 'dct-aws-cloud-labs-pa'
+
+    client_s3 = boto3.client(
+                's3',
+                aws_access_key_id = access_key,
+                aws_secret_access_key = secret_access_key
+              )
 
     df_raw['text'].fillna('', inplace=True)
     loan_payload = df_raw[df_raw['text'].str.contains('LOAN PAYLOAD')]
@@ -166,9 +170,8 @@ def preprocessing(df_raw, data_folder) :
     print('le chemin est: '+outdir_1)
     
     # charger le fichier dans s3
-    upload_file_bucket = 'paulin_s3'
     upload_file_key_1 = outdir_1+ outname_1
-    client.upload_file(outname_1, upload_file_bucket, upload_file_key_1)
+    client_s3.upload_file(outdir_1, bucket_name, outname_1)
 
     if not os.path.exists(outdir_1):
         os.makedirs(outdir_1, exist_ok=True)
@@ -193,7 +196,7 @@ def preprocessing(df_raw, data_folder) :
     for phoneNumber in tqdm(all_users_phone_number):
         df_phone_number = df_final[df_final['Phone_Number'] == phoneNumber]
         df_phone_number.to_csv(f'{outdir_2}/{phoneNumber}.csv', index=None)
-        client.upload_file(f'{outdir_2}/{phoneNumber}.csv', upload_file_bucket, phoneNumber)
+        client_s3.upload_file(f'{outdir_2}/{phoneNumber}.csv', bucket_name, phoneNumber)
         # repertoire temp dont le nom doit changer selon qu'on fait l'entrainement ou la prédiction
         ### se déplacer dans le dossier contenant les dataframes de chaque utilisateur
 
