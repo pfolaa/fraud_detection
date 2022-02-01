@@ -87,7 +87,9 @@ def connect_to_s3():
 def predict_from_json():
   file_json = request.files["filename"].filename
   print('file_json: '+file_json)
-  data = json.load(file_json)
+  filename = secure_filename(file_json)
+  f = open(file_json)
+  data = json.load(f)
   print('data: '+data)
   df = pd.DataFrame.from_records(data)
   print('df: '+df)
