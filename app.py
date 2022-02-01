@@ -82,6 +82,12 @@ def connect_to_s3():
 
   return {}
 
+@app.route("/download_s3")
+def download_file():
+
+
+
+  return {}
 
 @app.route("/predict", methods=['POST', 'GET'])
 def predict():  
@@ -89,7 +95,7 @@ def predict():
   print("*** file draw ***")
   print(file_draw)
   print('getcwd(): '+os.getcwd())
-  data_files_folder = os.path.join(os.getcwd(), 'static/')
+  data_files_folder = os.path.join(os.getcwd(), 'static')
   print('data_files_folder: '+data_files_folder)
   client_s3.upload_file(
            os.path.join(data_files_folder, file_draw),
