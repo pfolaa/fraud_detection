@@ -90,7 +90,7 @@ def predict_from_json():
   filename = secure_filename(file_json)
   print('filename: '+filename)
   outdir_json = f'./static/'+filename
-  fullname = os.path.join(outdir_json, file_json) 
+  fullname = os.path.join(f'./static/', filename) 
   print('fullname: '+fullname)
   print('outdir json: '+outdir_json)
   if not os.path.exists(outdir_json):
