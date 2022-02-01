@@ -84,8 +84,7 @@ def connect_to_s3():
 
 @app.route("/download_s3")
 def download_file():
-
-
+  client_s3.download_file(bucket_name, 'test.csv', os.path.join('./download_files/', 'my_file.csv'))
 
   return {}
 
