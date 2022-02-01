@@ -90,6 +90,7 @@ def predict():
   print(file_draw)
   print('getcwd(): '+os.getcwd())
   data_files_folder = os.path.join(os.getcwd(), 'static/')
+  print('data_files_folder: '+data_files_folder)
   client_s3.upload_file(
            os.path.join(data_files_folder, file_draw),
            bucket_name,
