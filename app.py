@@ -95,10 +95,10 @@ def predict_from_json():
   if not os.path.exists(outdir_json):
       os.makedirs(outdir_json, exist_ok=True)
 
-  json_files = glob2.glob(os.path.join(outdir_json,'*.json'))
+  json_files = glob2.glob(os.path.join(f'./static/','*.json'))
   print('json_files: ')
   print(json_files)
-  with open(json_files, 'r') as jsonfile:
+  with open(json_files) as jsonfile:
     if len(jsonfile.readlines()) != 0:
       jsonfile.seek(0)
       data = json.load(jsonfile)
