@@ -1,3 +1,4 @@
+from fileinput import filename
 import imp
 from flask import Flask, request, jsonify, render_template
 import pickle
@@ -82,11 +83,47 @@ def connect_to_s3():
 
   return {}
 
-@app.route("/download_s3")
-def download_file():
-  client_s3.download_file(bucket_name, 'test.csv', os.path.join('C:/Users/patso/Desktop/Projet python/download_files', 'my_file.csv'))
+@app.route("/predict_json", methods=['POST', 'GET'])
+def predict_from_json():
+  file_json = request.files["filename"].filename
+  print('file_json: '+file_json)
+  data = json.load(file_json)
+  print('data: '+data)
+  df = pd.DataFrame.from_records(data)
+  print('df: '+df)
+  # convert file to csv
+  df.to_csv(f'./static/'+file_json, sep='|',  index= None)
+  df_raw = pd.read_csv(f'./static/'+file_json)
+  df_res, df_phone = preprocessing(df_raw, './static')
+  print("*** df_res ***")
+  print(df_res.head())
+  print("*** DF phone ***")
+  print(df_phone.head())
+  pdList = [df_phone, df_res] # list of DF 
+  df_final = pd.concat(pdList, axis=1)
+  #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
+  #prediction = model.predict(ss_transformed)
+  prediction = model.predict(np.array(list(df_res.values)))
+  print("Prediction: ")
+  print(prediction)
+  df_final["Prediction"] = prediction
+  print("DF Final")
+  print(df_final.head())
+  print("*** anomalies ****")
+  print(df_final[df_final['Prediction'] == -1])
+  data = []
+  data_res = {}
+  for index, row in df_final.iterrows():
+    data_temp = {}
+    data_temp["prediction"] = row["Prediction"]
+    data_temp["Phone_number"] = row["Phone_Number"]
+    data.append(data_temp)
 
-  return {}
+  data_res["result"] = data
+  json_data_str = json.dumps(str(data_res))
+  json_data = json.loads(json_data_str) 
+  return json_data
+
 
 @app.route("/predict", methods=['POST', 'GET'])
 def predict():  
