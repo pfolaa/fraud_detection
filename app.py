@@ -11,6 +11,7 @@ from model import get_model
 import os
 import glob2
 import glob
+import tqdm
 import ast
 import json
 from os import chdir as cd
@@ -98,10 +99,11 @@ def predict_from_json():
   json_files = glob2.glob(os.path.join(f'./static/','*.json'))
   print('json_files: ')
   print(json_files)
-  with open(json_files) as jsonfile:
-    if len(jsonfile.readlines()) != 0:
-      jsonfile.seek(0)
-      data = json.load(jsonfile)
+  for file_name in tqdm.tqdm(json_files):
+    with open(json_files) as jsonfile:
+      if len(jsonfile.readlines()) != 0:
+        jsonfile.seek(0)
+        data = json.load(jsonfile)
   #data = json.loads(outdir_json)
   print('data: '+data)
   df = pd.DataFrame.from_records(data)
