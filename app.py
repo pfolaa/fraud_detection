@@ -96,7 +96,8 @@ def predict_from_json():
       os.makedirs(outdir_json, exist_ok=True)
 
   json_files = glob2.glob(os.path.join(outdir_json,'*.json'))
-  print('json_files: '+json_files)
+  print('json_files: ')
+  print(json_files)
   with open(json_files, 'r') as jsonfile:
     if len(jsonfile.readlines()) != 0:
       jsonfile.seek(0)
