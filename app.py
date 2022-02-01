@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from preprocessing import preprocessing
 from model import get_model
 import os
+import glob2
 import glob
 import ast
 import json
@@ -90,13 +91,13 @@ def predict_from_json():
   filename = secure_filename(file_json)
   print('filename: '+filename)
   outdir_json = f'./static/'+filename
-  fullname = os.path.join(f'./static/', filename) 
-  print('fullname: '+fullname)
   print('outdir json: '+outdir_json)
   if not os.path.exists(outdir_json):
       os.makedirs(outdir_json, exist_ok=True)
 
-  with open(fullname, 'r') as jsonfile:
+  json_files = glob2.glob(os.path.join(outdir_json,'*.json'))
+  print('json_files: '+json_files)
+  with open(json_files, 'r') as jsonfile:
     if len(jsonfile.readlines()) != 0:
       jsonfile.seek(0)
       data = json.load(jsonfile)
