@@ -88,8 +88,10 @@ def predict_from_json():
   file_json = request.files["filename"].filename
   print('file_json: '+file_json)
   filename = secure_filename(file_json)
-  f = open(file_json)
-  data = json.load(f)
+  print('filename: '+filename)
+  outdir_json = f'./static/'+filename
+  print('outdir json: '+outdir_json)
+  data = json.load(outdir_json)
   print('data: '+data)
   df = pd.DataFrame.from_records(data)
   print('df: '+df)
