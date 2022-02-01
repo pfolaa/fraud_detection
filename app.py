@@ -100,7 +100,7 @@ def predict_from_json():
   print('json_files: ')
   print(json_files)
   for file_name in tqdm.tqdm(json_files):
-    with open(json_files) as jsonfile:
+    with open(file_name) as jsonfile:
       if len(jsonfile.readlines()) != 0:
         jsonfile.seek(0)
         data = json.load(jsonfile)
