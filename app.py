@@ -96,14 +96,8 @@ def predict_from_json():
   if not os.path.exists(outdir_json):
       os.makedirs(outdir_json, exist_ok=True)
 
-  json_files = glob2.glob(os.path.join(f'./static/','*.json'))
-  print('json_files: ')
-  print(json_files)
-  for file_name in tqdm.tqdm(json_files):
-    with open(file_name) as jsonfile:
-      if len(jsonfile.readlines()) != 0:
-        jsonfile.seek(0)
-        data = json.load(jsonfile)
+  with open(outdir_json, 'r') as jsonfile:
+    data = json.load(jsonfile)
   #data = json.loads(outdir_json)
   print('data: '+data)
   df = pd.DataFrame.from_records(data)
