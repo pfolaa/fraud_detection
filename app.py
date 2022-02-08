@@ -98,7 +98,7 @@ def predict_from_json():
   if not os.path.exists(outdir_json):
       os.makedirs(outdir_json, exist_ok=True)
 
-  filefullname = os.path.join(outdir_json, filename)
+  filefullname = os.path.join(outdir_json, file_json)
   print('filefullname: '+filefullname)
   with open(filefullname, 'r') as jsonfile:
     data = json.load(jsonfile)
