@@ -98,8 +98,9 @@ def predict_from_json():
   if not os.path.exists(outdir_json):
       os.makedirs(outdir_json, exist_ok=True)
 
-  print('path complet: '+outdir_json+filename)
-  with open(outdir_json+filename, 'r') as jsonfile:
+  filefullname = os.path.join(outdir_json, filename)
+  print('filefullname: '+filefullname)
+  with open(filefullname, 'r') as jsonfile:
     data = json.load(jsonfile)
   print('data: '+data)
   df = pd.DataFrame.from_records(data)
