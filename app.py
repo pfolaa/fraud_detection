@@ -100,7 +100,7 @@ def predict_from_json():
 
   filefullname = os.path.join(outdir_json, file_json)
   print('filefullname: '+filefullname)
-  with open(filefullname) as jsonfile:
+  with open(str(filefullname), 'r') as jsonfile:
     data = json.load(jsonfile)
   print('data: '+data)
   df = pd.DataFrame.from_records(data)
