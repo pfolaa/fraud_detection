@@ -101,14 +101,13 @@ def predict_from_json():
   filefullname = os.path.join(outdir_json, file_json)
   print('filefullname: '+filefullname)
 
-  json_files = [pos_json for pos_json in os.listdir(outdir_json) if pos_json.endswith('.json')]
+  json_files = [pos_json for pos_json in os.walk(outdir_json) if pos_json.endswith('.json')]
   print("json_file: "+str(json_files))
-  for index, js in enumerate(json_files):
+  for js in enumerate(json_files):
     with open(os.path.join(outdir_json, js)) as json_file:
-        data = json.load(json_file)
+      data = json.load(json_file)
 
   #data = json.load(json_file)
-
 
   #with open(filefullname, 'r') as jsonfile:
   #  data = json.load(jsonfile)
