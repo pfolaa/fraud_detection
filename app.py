@@ -100,8 +100,14 @@ def predict_from_json():
 
   filefullname = os.path.join(outdir_json, file_json)
   print('filefullname: '+filefullname)
-  with open('/home/python_project/fraud_detection/static/2021-03-27.json', 'r') as jsonfile:
-    data = json.load(jsonfile)
+
+  json_file = [pos_json for pos_json in os.listdir(outdir_json) if pos_json.endswith('.json')]
+  print("json_file: "+json_file)
+  data = json.load(json_file)
+
+
+  #with open(filefullname, 'r') as jsonfile:
+  #  data = json.load(jsonfile)
   print('data: '+data)
   df = pd.DataFrame.from_records(data)
   print('df: '+df)
