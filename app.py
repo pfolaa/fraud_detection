@@ -95,15 +95,13 @@ def predict_from_json():
   print('dirname: '+dirname)
   outdir_json = os.path.join(dirname, 'static/')
   print("outdir_json: "+outdir_json)
-  if not os.path.exists(outdir_json):
-      os.makedirs(outdir_json, exist_ok=True)
+  #if not os.path.exists(outdir_json):
+   #   os.makedirs(outdir_json, exist_ok=True)
 
   filefullname = os.path.join(outdir_json, file_json)
   print('filefullname: '+filefullname)
-  #with open(filefullname, 'r') as jsonfile:
-   # data = json.load(jsonfile)
-  f = open (filefullname, "r")
-  data = json.loads(f.read())
+  with open(filefullname, 'r') as jsonfile:
+    data = json.load(jsonfile)
   print('data: '+data)
   df = pd.DataFrame.from_records(data)
   print('df: '+df)
