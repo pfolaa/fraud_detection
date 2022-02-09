@@ -93,6 +93,7 @@ def predict_from_json():
   #dirname = os.path.dirname(__file__)
   #print('dirname: '+dirname)
   data_files_folder = os.path.join(os.getcwd(), 'static')
+  print('data_files_folder: '+data_files_folder)
   client_s3.upload_file(
            os.path.join(data_files_folder, file_json),
            bucket_name,
