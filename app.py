@@ -102,7 +102,7 @@ def predict_from_json():
 
   filefullname = os.path.join(outdir_json, file_json)
   print('filefullname: '+filefullname)
-  json_files = glob2.glob(os.path.join(outdir,'*.json'))
+  json_files = glob2.glob(os.path.join('./static','*.json'))
   print("json_files: "+ str(json_files))
   for file_name in tqdm.tqdm(json_files):
     with open(file_name) as json_file:
