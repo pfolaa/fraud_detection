@@ -93,7 +93,7 @@ def predict_from_json():
   print('filename: '+filename)
   #dirname = os.path.dirname(__file__)
   #print('dirname: '+dirname)
-  outdir_json = os.path.join(os.getcwd(), 'static')
+  outdir_json = os.path.join(os.getcwd(), 'static/')
   outdir = f''+outdir_json+filename
   print("outdir_json: "+outdir_json)
   print("outdir: "+outdir)
