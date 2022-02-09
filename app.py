@@ -89,24 +89,28 @@ def connect_to_s3():
 def predict_from_json():
   file_json = request.files["filename"].filename
   print('file_json: '+file_json)
-  filename = secure_filename(file_json)
-  print('filename: '+filename)
+  
   #dirname = os.path.dirname(__file__)
   #print('dirname: '+dirname)
-  outdir_json = os.path.join(os.getcwd(), 'static/')
-  outdir = f''+outdir_json+filename
-  print("outdir_json: "+outdir_json)
-  print("outdir: "+outdir)
+  data_files_folder = os.path.join(os.getcwd(), 'static')
+  client_s3.upload_file(
+           os.path.join(data_files_folder, file_json),
+           bucket_name,
+           file_json
+        )
+  filename = secure_filename(file_json)
+  print('filename: '+filename)
+  outdir = f'./static/'+filename
+  print("*** Outdir ***")
+  print(outdir)
   if not os.path.exists(outdir):
       os.makedirs(outdir, exist_ok=True)
 
-  filefullname = os.path.join(outdir_json, file_json)
-  print('filefullname: '+filefullname)
-  json_files = glob2.glob(os.path.join('./static','*.json'))
-  print("json_files: "+ str(json_files))
+  #json_files = glob2.glob(os.path.join('./static','*.json'))
+  #print("json_files: "+ str(json_files))
   #for file_name in tqdm.tqdm(json_files):
-   # with open(file_name) as json_file:
-  data = json.load(file_json)
+  with open(outdir) as json_file:
+    data = json.load(file_json)
 
   
   #with open(outdir) as json_file:
