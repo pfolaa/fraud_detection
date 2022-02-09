@@ -104,9 +104,9 @@ def predict_from_json():
   print('filefullname: '+filefullname)
   json_files = glob2.glob(os.path.join('./static','*.json'))
   print("json_files: "+ str(json_files))
-  for file_name in tqdm.tqdm(json_files):
-    with open(file_name) as json_file:
-      data = json.load(json_file)
+  #for file_name in tqdm.tqdm(json_files):
+   # with open(file_name) as json_file:
+  data = json.load(file_json)
 
   
   #with open(outdir) as json_file:
