@@ -92,7 +92,9 @@ def predict_from_json():
   
   #dirname = os.path.dirname(__file__)
   #print('dirname: '+dirname)
-  
+
+  filename = secure_filename(file_json)
+  print('filename: '+filename)
   outdir = f'./static/'+filename
   print("*** Outdir ***")
   print(outdir)
