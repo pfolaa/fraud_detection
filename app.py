@@ -101,10 +101,11 @@ def predict_from_json():
   if not os.path.exists(outdir):
       os.makedirs(outdir, exist_ok=True)
 
-  #json_files = glob2.glob(os.path.join('./static','*.json'))
-  #print("json_files: "+ str(json_files))
-  #for file_name in tqdm.tqdm(json_files):
-  data = json.load(outdir)
+  json_files = glob2.glob(os.path.join('./static','*.json'))
+  print("json_files: "+ str(json_files))
+  for file_name in tqdm.tqdm(json_files):
+    with open(file_name) as json_file:
+      data = json.load(json_file)
 
   
   #with open(outdir) as json_file:
