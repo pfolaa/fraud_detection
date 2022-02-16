@@ -84,6 +84,15 @@ def connect_to_s3():
 
   return {}
 
+
+
+# route permettant d'uploader un dossier contenant des fichiers .json
+@app.route("/predict_folder_json", methods=['POST', 'GET'])
+def predict_from_folder_json():
+
+
+  return {}
+
 # route permettant d'uploader un fichier .json
 @app.route("/predict_json", methods=['POST', 'GET'])
 def predict_from_json():
