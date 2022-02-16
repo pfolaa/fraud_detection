@@ -4,14 +4,32 @@
 <div class="jumbotron">
     <h1 style='text-align: center'>Predict anomalies</h1>
 </div>
+
+<!-- pour appeler l'action predict_json -->
 <div>
-    <p class="lead">Upload a transaction file.</p>
-    <form method="POST" enctype="multipart/form-data" action="/predict_json">
-        <input type="file" id="myFile" name="filename" accept="application/json">
-        <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button>
+    <h2>Select file(s) to upload</h2>
+    <form method="post" action="/predict_folder_json" enctype="multipart/form-data">
+        <dl>
+            <p>
+                <input type="file" name="files[]" multiple="true" autocomplete="off" required
+                accept="application/json">
+            </p>
+        </dl>
+        <p>
+            <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button> 
+        </p>
     </form>
 </div>
 
+<!-- pour appeler l'action predict_json 
+    <div>
+        <h2>Select file(s) to upload</h2>
+        <form method="POST" enctype="multipart/form-data" action="/predict_json">
+            <input type="file" id="myFile" name="filename" accept="application/json">
+            <button type="submit" class="btn btn-primary btn-block btn-large">Predict</button>
+        </form>
+    </div>
+-->
 <!-- pour appeler l'action predict 
     <div>
         <p class="lead">Upload a transaction file.</p>
