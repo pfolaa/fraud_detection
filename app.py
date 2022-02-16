@@ -84,6 +84,7 @@ def connect_to_s3():
 
   return {}
 
+# route permettant d'uploader un fichier .json
 @app.route("/predict_json", methods=['POST', 'GET'])
 def predict_from_json():
 
@@ -106,26 +107,24 @@ def predict_from_json():
   # mettre \\ si on travaille sur windows
   #path_file = f'.\\static\\'+file_json
 
-  path_file = f'./static/'+file_json
-  print('path_file: '+path_file)
+  outdir_1 = f'./static/'+file_json
+  print('path_file: '+outdir_1)
   # ouvrir le fichier json
-  f = open(path_file)
+  f = open(outdir_1)
   # on le charge
   data = json.load(f)
   df = pd.DataFrame.from_records(data)
-  print('df: '+df)
   # convert file to csv
   # mettre \\ si on travaille sur windows
   #outdir_1 = f'.\\static\\csv_files'
-  outdir_1 = f'./static/csv_files'
-  if not os.path.exists(outdir_1):
-        os.makedirs(outdir_1, exist_ok=True)
+  outdir_2 = f'./static'
 
-  df.to_csv(os.path.join(outdir_1, 'final_csv.csv'), sep='|',  index= None)
+  df.to_csv(os.path.join(outdir_2, 'final_csv.csv'), sep='|',  index= None)
   #df.to_csv(f'./static/'+file_json, sep='|',  index= None)
-  df_raw = pd.read_csv(os.path.join(outdir_1, 'final_csv.csv'), sep="|")
+  df_raw = pd.read_csv(os.path.join(outdir_2, 'final_csv.csv'), sep="|")
   #df_raw = pd.read_csv(f'./static/'+file_json)
-  df_res, df_phone = preprocessing(df_raw, os.path.join(outdir_1, 'final_csv.csv'))
+  #df_res, df_phone = preprocessing(df_raw, os.path.join(outdir_2, 'final_csv.csv'))
+  df_res, df_phone = preprocessing(df_raw, './static')
   print("*** df_res ***")
   print(df_res.head())
   print("*** DF phone ***")
@@ -156,6 +155,7 @@ def predict_from_json():
   return json_data
 
 
+# route permettant d'uploader un fichier .csv
 @app.route("/predict", methods=['POST', 'GET'])
 def predict():  
   file_draw = request.files["filename"].filename
