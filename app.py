@@ -104,9 +104,9 @@ def predict_from_json():
 
   # path du fichier uploadé dans le file system
   # mettre \\ si on travaille sur windows
-  path_file = f'.\\static\\'+file_json
+  #path_file = f'.\\static\\'+file_json
 
-  path_file = f'./static'+file_json
+  path_file = f'./static/'+file_json
   print('path_file: '+path_file)
   # ouvrir le fichier json
   f = open(path_file)
