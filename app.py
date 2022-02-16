@@ -1,5 +1,4 @@
 from fileinput import filename
-import imp
 from flask import Flask, request, jsonify, render_template
 import pickle
 import numpy as np
@@ -23,7 +22,7 @@ app = Flask(__name__)
 
 # load the pickle model and standard scaler
 model = pickle.load(open("./static/model.pkl", "rb"))
-standard_scaler = pickle.load(open("./static/standard_scaler.pkl", "rb"))
+#standard_scaler = pickle.load(open("./static/standard_scaler.pkl", "rb"))
 
 access_key = 'AKIAWPXBUC7KKNTIR7UI'
 secret_access_key =  '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'
@@ -87,41 +86,46 @@ def connect_to_s3():
 
 @app.route("/predict_json", methods=['POST', 'GET'])
 def predict_from_json():
+
   file_json = request.files["filename"].filename
   print('file_json: '+file_json)
-  
-  #dirname = os.path.dirname(__file__)
-  #print('dirname: '+dirname)
+  # on recupère le fichier uploadé
+  profile = request.files['filename']
+  #on récupère le nom du fichier
+  file_name = secure_filename(profile.filename)
+  # on définit le path où on souhaite sauvegarder le fichier en local
+  # mettre \\ si on travaille sur windows
+  #upload_dir_file = f'.\\static\\'
 
-  filename = secure_filename(file_json)
-  print('filename: '+filename)
-  outdir = f'./static/'+filename
-  print("*** Outdir ***")
-  print(outdir)
-  if not os.path.exists(outdir):
-      os.makedirs(outdir, exist_ok=True)
+  upload_dir_file = f'./static'
+  # on sauvegarde le fichier uploadé dans notre file système dans le dossier /static 
+  # avec son nom file_name
+  profile.save(os.path.join(upload_dir_file, file_name))
 
-  json_files = glob2.glob(os.path.join('./static','*.json'))
-  print("json_files: "+ str(json_files))
-  for file_name in tqdm.tqdm(json_files):
-    with open(file_name) as json_file:
-      data = json.load(json_file)
+  # path du fichier uploadé dans le file system
+  # mettre \\ si on travaille sur windows
+  path_file = f'.\\static\\'+file_json
 
-  
-  #with open(outdir) as json_file:
-   #  data = json.load(json_file)
-
-  #data = json.load(json_file)
-
-  #with open(filefullname, 'r') as jsonfile:
-  #  data = json.load(jsonfile)
-  print('data: '+data)
+  path_file = f'./static'+file_json
+  print('path_file: '+path_file)
+  # ouvrir le fichier json
+  f = open(path_file)
+  # on le charge
+  data = json.load(f)
   df = pd.DataFrame.from_records(data)
   print('df: '+df)
   # convert file to csv
-  df.to_csv(f'./static/'+file_json, sep='|',  index= None)
-  df_raw = pd.read_csv(f'./static/'+file_json)
-  df_res, df_phone = preprocessing(df_raw, './static')
+  # mettre \\ si on travaille sur windows
+  #outdir_1 = f'.\\static\\csv_files'
+  outdir_1 = f'./static/csv_files'
+  if not os.path.exists(outdir_1):
+        os.makedirs(outdir_1, exist_ok=True)
+
+  df.to_csv(os.path.join(outdir_1, 'final_csv.csv'), sep='|',  index= None)
+  #df.to_csv(f'./static/'+file_json, sep='|',  index= None)
+  df_raw = pd.read_csv(os.path.join(outdir_1, 'final_csv.csv'), sep="|")
+  #df_raw = pd.read_csv(f'./static/'+file_json)
+  df_res, df_phone = preprocessing(df_raw, os.path.join(outdir_1, 'final_csv.csv'))
   print("*** df_res ***")
   print(df_res.head())
   print("*** DF phone ***")
