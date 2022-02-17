@@ -1,5 +1,5 @@
 from fileinput import filename
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, flash, request, redirect, jsonify, render_template
 import pickle
 import numpy as np
 import pandas as pd
@@ -16,9 +16,12 @@ import json
 from os import chdir as cd
 import boto3
 from botocore.exceptions import ClientError
+from utils import getListFileCSV
 
 # start Flask api
 app = Flask(__name__)
+
+app.secret_key = "secret key"
 
 # load the pickle model and standard scaler
 model = pickle.load(open("./static/model.pkl", "rb"))
@@ -85,83 +88,170 @@ def connect_to_s3():
   return {}
 
 
+# Allowed extension you can set your own
+ALLOWED_EXTENSIONS = set(['json', 'csv'])
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 # route permettant d'uploader un dossier contenant des fichiers .json
 @app.route("/predict_folder_json", methods=['POST', 'GET'])
 def predict_from_folder_json():
+  if request.method == 'POST':
+    if 'files[]' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
 
+    files = request.files.getlist('files[]')
 
-  return {}
+    upload_dir_file = f'./static/json_files'
+    #upload_dir_file = f'.\\static\\json_files\\'
+    if not os.path.exists(upload_dir_file):
+      os.makedirs(upload_dir_file, exist_ok=True)
+
+    for file in files:
+      if file and allowed_file(file.filename):
+          filename = secure_filename(file.filename)
+          file.save(os.path.join(upload_dir_file, filename))
+    flash('File(s) successfully uploaded')
+    
+    json_files = glob2.glob(os.path.join(upload_dir_file,'*.json'))
+    json_files = sorted(json_files)
+    for file_name in tqdm.tqdm(json_files):
+      with open(file_name, 'r') as f:
+        path_file_csv = file_name.replace(".json", ".csv").split("/")[-1]
+        print("path_file_csv: "+path_file_csv)
+        data = json.load(f)
+        df = pd.DataFrame.from_records(data)
+        df.to_csv(f'{path_file_csv}', sep='|', index= None)
+            
+    all_df_list= getListFileCSV(upload_dir_file)
+    df_raw = pd.concat(all_df_list, ignore_index=True)
+    print("*** df_raw ***")
+    print(df_raw.head())
+    df_res, df_phone = preprocessing(df_raw, './static')
+    print("*** df_res ***")
+    print(df_res.head())
+    print("*** DF phone ***")
+    print(df_phone.head())
+    pdList = [df_phone, df_res] # list of DF 
+    df_final = pd.concat(pdList, axis=1)
+    #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
+    #prediction = model.predict(ss_transformed)
+    prediction = model.predict(np.array(list(df_res.values)))
+    print("Prediction: ")
+    print(prediction)
+    df_final["Prediction"] = prediction
+    print("DF Final")
+    print(df_final.head())
+    print("*** anomalies ****")
+    print(df_final[df_final['Prediction'] == -1])
+    data = []
+    data_res = {}
+    for index, row in df_final.iterrows():
+      data_temp = {}
+      data_temp["prediction"] = row["Prediction"]
+      data_temp["Phone_number"] = row["Phone_Number"]
+      data.append(data_temp)
+
+    data_res["result"] = data
+    json_data_str = json.dumps(str(data_res))
+    json_data = json.loads(json_data_str) 
+    return json_data
+    
 
 # route permettant d'uploader un fichier .json
 @app.route("/predict_json", methods=['POST', 'GET'])
 def predict_from_json():
+  if request.method == 'POST':
+      # check if the post request has the file part
+      if 'file' not in request.files:
+          flash('No file part')
+          return redirect(request.url)
+      file = request.files['file']
+      # If the user does not select a file, the browser submits an
+      # empty file without a filename.
+      if file.filename == '':
+          flash('No selected file')
+          return redirect(request.url)
 
-  file_json = request.files["filename"].filename
-  print('file_json: '+file_json)
-  # on recupère le fichier uploadé
-  profile = request.files['filename']
-  #on récupère le nom du fichier
-  file_name = secure_filename(profile.filename)
-  # on définit le path où on souhaite sauvegarder le fichier en local
-  # mettre \\ si on travaille sur windows
-  #upload_dir_file = f'.\\static\\'
+      file_json = request.files["filename"].filename
+      print('file_json: '+file_json)
+      # on recupère le fichier uploadé
+      profile = request.files['filename']
+      #on récupère le nom du fichier
+      file_name = secure_filename(profile.filename)
+      # on définit le path où on souhaite sauvegarder le fichier en local
+      # mettre \\ si on travaille sur windows
+      #upload_dir_file = f'.\\static\\'
 
-  upload_dir_file = f'./static'
-  # on sauvegarde le fichier uploadé dans notre file système dans le dossier /static 
-  # avec son nom file_name
-  profile.save(os.path.join(upload_dir_file, file_name))
+      upload_dir_file = f'./static'
+      # on sauvegarde le fichier uploadé dans notre file système dans le dossier /static 
+      # avec son nom file_name
+      profile.save(os.path.join(upload_dir_file, file_name))
 
-  # path du fichier uploadé dans le file system
-  # mettre \\ si on travaille sur windows
-  #path_file = f'.\\static\\'+file_json
+      # path du fichier uploadé dans le file system
+      # mettre \\ si on travaille sur windows
+      #path_file = f'.\\static\\'+file_json
 
-  outdir_1 = f'./static/'+file_json
-  print('path_file: '+outdir_1)
-  # ouvrir le fichier json
-  f = open(outdir_1)
-  # on le charge
-  data = json.load(f)
-  df = pd.DataFrame.from_records(data)
-  # convert file to csv
-  # mettre \\ si on travaille sur windows
-  #outdir_1 = f'.\\static\\csv_files'
-  outdir_2 = f'./static'
+      outdir_1 = f'./static/'+file_json
+      print('path_file: '+outdir_1)
+      # ouvrir le fichier json
+      f = open(outdir_1)
+      # on le charge
+      data = json.load(f)
+      df = pd.DataFrame.from_records(data)
+      # convert file to csv
+      # mettre \\ si on travaille sur windows
+      #outdir_1 = f'.\\static\\csv_files'
+      outdir_2 = f'./static'
 
-  df.to_csv(os.path.join(outdir_2, 'final_csv.csv'), sep='|',  index= None)
-  #df.to_csv(f'./static/'+file_json, sep='|',  index= None)
-  df_raw = pd.read_csv(os.path.join(outdir_2, 'final_csv.csv'), sep="|")
-  #df_raw = pd.read_csv(f'./static/'+file_json)
-  #df_res, df_phone = preprocessing(df_raw, os.path.join(outdir_2, 'final_csv.csv'))
-  df_res, df_phone = preprocessing(df_raw, './static')
-  print("*** df_res ***")
-  print(df_res.head())
-  print("*** DF phone ***")
-  print(df_phone.head())
-  pdList = [df_phone, df_res] # list of DF 
-  df_final = pd.concat(pdList, axis=1)
-  #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
-  #prediction = model.predict(ss_transformed)
-  prediction = model.predict(np.array(list(df_res.values)))
-  print("Prediction: ")
-  print(prediction)
-  df_final["Prediction"] = prediction
-  print("DF Final")
-  print(df_final.head())
-  print("*** anomalies ****")
-  print(df_final[df_final['Prediction'] == -1])
-  data = []
-  data_res = {}
-  for index, row in df_final.iterrows():
-    data_temp = {}
-    data_temp["prediction"] = row["Prediction"]
-    data_temp["Phone_number"] = row["Phone_Number"]
-    data.append(data_temp)
+      df.to_csv(os.path.join(outdir_2, 'final_csv.csv'), sep='|',  index= None)
+      #df.to_csv(f'./static/'+file_json, sep='|',  index= None)
+      df_raw = pd.read_csv(os.path.join(outdir_2, 'final_csv.csv'), sep="|")
+      #df_raw = pd.read_csv(f'./static/'+file_json)
+      #df_res, df_phone = preprocessing(df_raw, os.path.join(outdir_2, 'final_csv.csv'))
+      df_res, df_phone = preprocessing(df_raw, './static')
+      print("*** df_res ***")
+      print(df_res.head())
+      print("*** DF phone ***")
+      print(df_phone.head())
+      pdList = [df_phone, df_res] # list of DF 
+      df_final = pd.concat(pdList, axis=1)
+      #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
+      #prediction = model.predict(ss_transformed)
+      prediction = model.predict(np.array(list(df_res.values)))
+      print("Prediction: ")
+      print(prediction)
+      df_final["Prediction"] = prediction
+      print("DF Final")
+      print(df_final.head())
+      print("*** anomalies ****")
+      print(df_final[df_final['Prediction'] == -1])
+      data = []
+      data_res = {}
+      for index, row in df_final.iterrows():
+        data_temp = {}
+        data_temp["prediction"] = row["Prediction"]
+        data_temp["Phone_number"] = row["Phone_Number"]
+        data.append(data_temp)
 
-  data_res["result"] = data
-  json_data_str = json.dumps(str(data_res))
-  json_data = json.loads(json_data_str) 
-  return json_data
+      data_res["result"] = data
+      json_data_str = json.dumps(str(data_res))
+      json_data = json.loads(json_data_str) 
+      return json_data
+  
+  return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
 
 
 # route permettant d'uploader un fichier .csv
