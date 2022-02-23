@@ -141,6 +141,8 @@ def predict_from_folder_json():
     #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
     #prediction = model.predict(ss_transformed)
     prediction = model.predict(np.array(list(df_res.values)))
+    # remove files json after prediction
+    os.remove(os.path.join(upload_dir_file,'*.json'))
     print("Prediction: ")
     print(prediction)
     df_final["Prediction"] = prediction
