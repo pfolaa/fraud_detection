@@ -168,10 +168,6 @@ def preprocessing(df_raw, data_folder) :
     outname_1 = 'nirra_log_bot_final.csv'
     outdir_1 = f'{data_folder}/df_final/'
     #print('le chemin est: '+outdir_1)
-    
-    # charger le fichier dans s3
-    print('le chemin est: '+os.path.join(outdir_1, outname_1))
-    client_s3.upload_file(os.path.join(outdir_1, outname_1), bucket_name, outname_1)
 
     if not os.path.exists(outdir_1):
         os.makedirs(outdir_1, exist_ok=True)
@@ -179,7 +175,10 @@ def preprocessing(df_raw, data_folder) :
     print('chemin fullname_1: '+fullname_1)
     ### Export DF
     df_final.to_csv(fullname_1, index=None)
-    #client_s3.upload_file(os.path.join(outdir_1, df_final), bucket_name, df_final)
+
+    # charger le fichier dans s3
+    print('le chemin est: '+os.path.join(outdir_1, outname_1))
+    client_s3.upload_file(os.path.join(outdir_1, outname_1), bucket_name, outname_1)
 
     all_users_phone_number = get_unique_numbers_DF(df_final)
     all_df_phone_number = [] # to get list of dataframes
