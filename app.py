@@ -144,8 +144,8 @@ def predict_from_folder_json():
     # remove files after prediction
     csv_files = glob2.glob(os.path.join(upload_dir_file,'*.csv'))
     for file_csv_name in tqdm.tqdm(csv_files):
-      os.remove(os.path.join(upload_dir_file, file_csv_name))
-      
+      os.remove(file_csv_name)
+
     print("Prediction: ")
     print(prediction)
     df_final["Prediction"] = prediction
