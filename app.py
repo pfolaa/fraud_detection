@@ -141,10 +141,15 @@ def predict_from_folder_json():
     #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
     #prediction = model.predict(ss_transformed)
     prediction = model.predict(np.array(list(df_res.values)))
+
     # remove files after prediction
     csv_files = glob2.glob(os.path.join(upload_dir_file,'*.csv'))
     for file_csv_name in tqdm.tqdm(csv_files):
       os.remove(file_csv_name)
+
+    json_files_to_cancel  = glob2.glob(os.path.join(upload_dir_file,'*.json'))
+    for file_json_name in tqdm.tqdm(json_files_to_cancel):
+      os.remove(file_json_name)
 
     print("Prediction: ")
     print(prediction)
@@ -165,7 +170,16 @@ def predict_from_folder_json():
     json_data_str = json.dumps(str(data_res))
     json_data = json.loads(json_data_str) 
     return json_data
-    
+  
+  return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
 
 # route permettant d'uploader un fichier .json
 @app.route("/predict_json", methods=['POST', 'GET'])
