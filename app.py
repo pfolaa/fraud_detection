@@ -143,6 +143,8 @@ def predict_from_folder_json():
     prediction = model.predict(np.array(list(df_res.values)))
     # remove files json after prediction
     os.remove(os.path.join(upload_dir_file,'*.json'))
+    os.remove(os.path.join(upload_dir_file,'*.csv'))
+    os.remove(os.path.join(path_file_csv, '*.json'))
     print("Prediction: ")
     print(prediction)
     df_final["Prediction"] = prediction
