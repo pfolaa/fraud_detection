@@ -141,10 +141,11 @@ def predict_from_folder_json():
     #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
     #prediction = model.predict(ss_transformed)
     prediction = model.predict(np.array(list(df_res.values)))
-    # remove files json after prediction
-    #os.remove(os.path.join(upload_dir_file,'*.json'))
-    os.remove(os.path.join(upload_dir_file,'*.csv'))
-    os.remove(os.path.join(path_file_csv, '*.json'))
+    # remove files after prediction
+    csv_files = glob2.glob(os.path.join(upload_dir_file,'*.csv'))
+    for file_csv_name in tqdm.tqdm(csv_files):
+      os.remove(os.path.join(upload_dir_file, file_csv_name))
+      
     print("Prediction: ")
     print(prediction)
     df_final["Prediction"] = prediction
