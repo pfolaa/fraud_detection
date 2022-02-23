@@ -262,19 +262,19 @@ def preprocessing(df_raw, data_folder) :
 
     # remove files after prediction
     csv_files_outdir_1 = glob2.glob(os.path.join(outdir_1,'*.csv'))
-    for file_csv_name_outdir_1 in tqdm.tqdm(csv_files_outdir_1):
+    for file_csv_name_outdir_1 in tqdm(csv_files_outdir_1):
       os.remove(file_csv_name_outdir_1)
 
     csv_files_outdir_2 = glob2.glob(os.path.join(outdir_2,'*.csv'))
-    for file_csv_name_outdir_2 in tqdm.tqdm(csv_files_outdir_2):
+    for file_csv_name_outdir_2 in tqdm(csv_files_outdir_2):
       os.remove(file_csv_name_outdir_2)
 
     csv_files_outdir_3 = glob2.glob(os.path.join(outdir_3,'*.csv'))
-    for file_csv_name_outdir_3 in tqdm.tqdm(csv_files_outdir_3):
+    for file_csv_name_outdir_3 in tqdm(csv_files_outdir_3):
       os.remove(file_csv_name_outdir_3)
     
     csv_files_outdir_4 = glob2.glob(os.path.join(outdir_4,'*.csv'))
-    for file_csv_name_outdir_4 in tqdm.tqdm(csv_files_outdir_4):
+    for file_csv_name_outdir_4 in tqdm(csv_files_outdir_4):
       os.remove(file_csv_name_outdir_4)
 
     return X_train_with_operations_per_minute, df_phone_number_with_operations_per_minute
