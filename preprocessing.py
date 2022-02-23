@@ -255,9 +255,9 @@ def preprocessing(df_raw, data_folder) :
     print('le chemin 4 est : '+outdir_4)
     fullname_4 = os.path.join(outdir_4, outname_4) 
     print('chemin fullname_4: '+fullname_4)
-    client_s3.upload_file(os.path.join(outdir_4, outname_4), bucket_name, outname_4)
     ### Export DF
     X_train_with_operations_per_minute.to_csv(fullname_4, index=None)
+    client_s3.upload_file(os.path.join(outdir_4, outname_4), bucket_name, outname_4)
 
     # remove files after prediction
     csv_files_outdir_1 = glob2.glob(os.path.join(outdir_1,'*.csv'))
