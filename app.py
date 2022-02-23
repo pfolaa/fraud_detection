@@ -120,12 +120,12 @@ def predict_from_folder_json():
     json_files = glob2.glob(os.path.join(upload_dir_file,'*.json'))
     json_files = sorted(json_files)
     for file_name in tqdm.tqdm(json_files):
-      #with open(file_name, 'r') as f:
-      with open(file_name) as f:
+      with open(file_name, 'r') as f:
         path_file_csv = file_name.replace(".json", ".csv").split("/")[-1]
         print("path_file_csv: "+path_file_csv)
         data = json.load(f)
         df = pd.DataFrame.from_records(data)
+        print("df: "+df)
         df.to_csv(f'{path_file_csv}', sep='|', index= None)
             
     all_df_list= getListFileCSV(upload_dir_file)
