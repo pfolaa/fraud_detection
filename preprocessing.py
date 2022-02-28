@@ -279,8 +279,8 @@ def preprocessing(df_raw, data_folder) :
         for file_csv_name_outdir_4 in tqdm(csv_files_outdir_4):
             os.remove(file_csv_name_outdir_4)
 
-    return X_train_with_operations_per_minute, df_phone_number_with_operations_per_minute
-    #### fin préprocessing
+        return X_train_with_operations_per_minute, df_phone_number_with_operations_per_minute
+        #### fin préprocessing
 
 
 if __name__ == "__main__":
