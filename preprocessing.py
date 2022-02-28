@@ -234,50 +234,48 @@ def preprocessing(df_raw, data_folder) :
     print(list_all_df_with_operations_per_minute)
     ### Diviser la liste des dataframes avec operations par minute en DF de Train et de Test
     # concatenation de la liste des dataframes
-    if len(list_all_df_with_operations_per_minute) > 1:
-        df_with_operations_per_minute = pd.concat(list_all_df_with_operations_per_minute, axis=0).reset_index(drop=True)
-        
-        #Split dataset into train and test
-        X_train_with_operations_per_minute, X_test_with_operations_per_minute = train_test_split(df_with_operations_per_minute, test_size = 0.3)
-        ### DataSet de Train
-        df_phone_number_with_operations_per_minute = X_train_with_operations_per_minute[['Phone_Number', 'Type_Request']]
-        # on drop les colonnes Phone_Number et Type_Request
-        X_train_with_operations_per_minute.drop(['Phone_Number', 'Type_Request'],  axis=1, inplace=True)
-        print("***dataframe train***")
-        print(X_train_with_operations_per_minute.head(5))
-        # convertir le dataframe de X_train en une liste
-        #list_with_operations_per_minute = X_train_with_operations_per_minute.values.tolist()
+    df_with_operations_per_minute = pd.concat(list_all_df_with_operations_per_minute, axis=0).reset_index(drop=True)
+    #Split dataset into train and test
+    X_train_with_operations_per_minute, X_test_with_operations_per_minute = train_test_split(df_with_operations_per_minute, test_size = 0.3)
+    ### DataSet de Train
+    df_phone_number_with_operations_per_minute = X_train_with_operations_per_minute[['Phone_Number', 'Type_Request']]
+    # on drop les colonnes Phone_Number et Type_Request
+    X_train_with_operations_per_minute.drop(['Phone_Number', 'Type_Request'],  axis=1, inplace=True)
+    print("***dataframe train***")
+    print(X_train_with_operations_per_minute.head(5))
+    # convertir le dataframe de X_train en une liste
+    #list_with_operations_per_minute = X_train_with_operations_per_minute.values.tolist()
 
-        #df_final_operations_per_minute = pd.concat(list_with_operations_per_minute, axis=0).reset_index(drop=True)
-        
-        outdir_4 = f'{data_folder}/final_file'
-        outname_4 = 'X_train_with_operations_per_minute.csv'
-        if not os.path.exists(outdir_4):
-            os.makedirs(outdir_4, exist_ok=True)
+    #df_final_operations_per_minute = pd.concat(list_with_operations_per_minute, axis=0).reset_index(drop=True)
+    
+    outdir_4 = f'{data_folder}/final_file'
+    outname_4 = 'X_train_with_operations_per_minute.csv'
+    if not os.path.exists(outdir_4):
+        os.makedirs(outdir_4, exist_ok=True)
 
-        print('le chemin 4 est : '+outdir_4)
-        fullname_4 = os.path.join(outdir_4, outname_4) 
-        print('chemin fullname_4: '+fullname_4)
-        ### Export DF
-        X_train_with_operations_per_minute.to_csv(fullname_4, index=None)
-        client_s3.upload_file(os.path.join(outdir_4, outname_4), bucket_name, outname_4)
+    print('le chemin 4 est : '+outdir_4)
+    fullname_4 = os.path.join(outdir_4, outname_4) 
+    print('chemin fullname_4: '+fullname_4)
+    ### Export DF
+    X_train_with_operations_per_minute.to_csv(fullname_4, index=None)
+    client_s3.upload_file(os.path.join(outdir_4, outname_4), bucket_name, outname_4)
 
-        # remove files after prediction
-        csv_files_outdir_1 = glob2.glob(os.path.join(outdir_1,'*.csv'))
-        for file_csv_name_outdir_1 in tqdm(csv_files_outdir_1):
-            os.remove(file_csv_name_outdir_1)
+    # remove files after prediction
+    csv_files_outdir_1 = glob2.glob(os.path.join(outdir_1,'*.csv'))
+    for file_csv_name_outdir_1 in tqdm(csv_files_outdir_1):
+        os.remove(file_csv_name_outdir_1)
 
-        csv_files_outdir_2 = glob2.glob(os.path.join(outdir_2,'*.csv'))
-        for file_csv_name_outdir_2 in tqdm(csv_files_outdir_2):
-            os.remove(file_csv_name_outdir_2)
+    csv_files_outdir_2 = glob2.glob(os.path.join(outdir_2,'*.csv'))
+    for file_csv_name_outdir_2 in tqdm(csv_files_outdir_2):
+        os.remove(file_csv_name_outdir_2)
 
-        csv_files_outdir_3 = glob2.glob(os.path.join(outdir_3,'*.csv'))
-        for file_csv_name_outdir_3 in tqdm(csv_files_outdir_3):
-            os.remove(file_csv_name_outdir_3)
-        
-        csv_files_outdir_4 = glob2.glob(os.path.join(outdir_4,'*.csv'))
-        for file_csv_name_outdir_4 in tqdm(csv_files_outdir_4):
-            os.remove(file_csv_name_outdir_4)
+    csv_files_outdir_3 = glob2.glob(os.path.join(outdir_3,'*.csv'))
+    for file_csv_name_outdir_3 in tqdm(csv_files_outdir_3):
+        os.remove(file_csv_name_outdir_3)
+    
+    csv_files_outdir_4 = glob2.glob(os.path.join(outdir_4,'*.csv'))
+    for file_csv_name_outdir_4 in tqdm(csv_files_outdir_4):
+        os.remove(file_csv_name_outdir_4)
 
     return X_train_with_operations_per_minute, df_phone_number_with_operations_per_minute
     #### fin préprocessing
