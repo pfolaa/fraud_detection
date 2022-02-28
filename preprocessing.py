@@ -230,6 +230,8 @@ def preprocessing(df_raw, data_folder) :
             element.sort_values('TS_to_DateTime')
             list_all_df_with_operations_per_minute.append(df_number_of_operations_per_minute(element))
 
+    print("** list_all_df_with_operations_per_minute **")
+    print(list_all_df_with_operations_per_minute)
     ### Diviser la liste des dataframes avec operations par minute en DF de Train et de Test
     # concatenation de la liste des dataframes
     df_with_operations_per_minute = pd.concat(list_all_df_with_operations_per_minute, axis=0).reset_index(drop=True)
