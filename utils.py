@@ -327,3 +327,13 @@ def get_all_df_diff_ts(new_path):
     list_df_with_diff_ts.append(ele_with_num_trans)
 
   return list_df_with_diff_ts
+
+
+def cancel_files_after_prediction(list_files):
+  ''' cette fonction permet d'éliminer dans le serveur après la prédiction
+      tous les fichiers stockés pendant le preprocessing'''
+  if len(list_files) > 0:
+    for one_file in tqdm(list_files):
+        os.remove(one_file)
+
+  return "OK"

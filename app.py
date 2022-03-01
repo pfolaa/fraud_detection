@@ -17,6 +17,8 @@ from os import chdir as cd
 import boto3
 from botocore.exceptions import ClientError
 from utils import getListFileCSV
+from sklearn.model_selection import train_test_split
+from utils import cancel_files_after_prediction
 
 # start Flask api
 app = Flask(__name__)
@@ -131,26 +133,47 @@ def predict_from_folder_json():
     df_raw = pd.concat(all_df_list, ignore_index=True)
     print("*** df_raw ***")
     print(df_raw.head())
-    df_res, df_phone = preprocessing(df_raw, './static')
+    #df_res, df_phone = preprocessing(df_raw, './static')
+    list_all_df_with_operations_per_minute = preprocessing(df_raw, './static')
+    if len(list_all_df_with_operations_per_minute)>1:
+      df_with_operations_per_minute = pd.concat(list_all_df_with_operations_per_minute, axis=0).reset_index(drop=True)
+      #Split dataset into train and test
+      X_train_with_operations_per_minute, X_test_with_operations_per_minute = train_test_split(df_with_operations_per_minute, test_size = 0.3)
+      ### DataSet de Train
+      df_phone_number_with_operations_per_minute = X_train_with_operations_per_minute[['Phone_Number', 'Type_Request']]
+      # on drop les colonnes Phone_Number et Type_Request
+      X_train_with_operations_per_minute.drop(['Phone_Number', 'Type_Request'],  axis=1, inplace=True)
+      print("***dataframe train***")
+      print(X_train_with_operations_per_minute.head(5))
+      # convertir le dataframe de X_train en une liste
+      #list_with_operations_per_minute = X_train_with_operations_per_minute.values.tolist()
+      #df_final_operations_per_minute = pd.concat(list_with_operations_per_minute, axis=0).reset_index(drop=True)
+      outdir_4 = '.static/final_file'
+      outname_4 = 'X_train_with_operations_per_minute.csv'
+      if not os.path.exists(outdir_4):
+        os.makedirs(outdir_4, exist_ok=True)
+      
+      print('le chemin 4 est : '+outdir_4)
+      fullname_4 = os.path.join(outdir_4, outname_4) 
+      print('chemin fullname_4: '+fullname_4)
+      ### Export DF
+      X_train_with_operations_per_minute.to_csv(fullname_4, index=None)
+      client_s3.upload_file(os.path.join(outdir_4, outname_4), bucket_name, outname_4)
+
     print("*** df_res ***")
-    print(df_res.head())
+    print(X_train_with_operations_per_minute.head())
     print("*** DF phone ***")
-    print(df_phone.head())
-    pdList = [df_phone, df_res] # list of DF 
+    print(df_phone_number_with_operations_per_minute.head())
+    pdList = [df_phone_number_with_operations_per_minute, X_train_with_operations_per_minute] # list of DF 
     df_final = pd.concat(pdList, axis=1)
     #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
     #prediction = model.predict(ss_transformed)
-    prediction = model.predict(np.array(list(df_res.values)))
+    prediction = model.predict(np.array(list(X_train_with_operations_per_minute.values)))
 
     # remove files after prediction
-    csv_files = glob2.glob(os.path.join(upload_dir_file,'*.csv'))
-    for file_csv_name in tqdm.tqdm(csv_files):
-      os.remove(file_csv_name)
-
-    json_files_to_cancel  = glob2.glob(os.path.join(upload_dir_file,'*.json'))
-    for file_json_name in tqdm.tqdm(json_files_to_cancel):
-      os.remove(file_json_name)
-
+    cancel_files_after_prediction(glob2.glob(os.path.join(upload_dir_file,'*.csv')))
+    cancel_files_after_prediction(glob2.glob(os.path.join(upload_dir_file,'*.json')))
+    
     print("Prediction: ")
     print(prediction)
     df_final["Prediction"] = prediction
