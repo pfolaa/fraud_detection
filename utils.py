@@ -333,7 +333,7 @@ def cancel_files_after_prediction(list_files):
   ''' cette fonction permet d'éliminer dans le serveur après la prédiction
       tous les fichiers stockés pendant le preprocessing'''
   if len(list_files) > 0:
-    for one_file in tqdm(list_files):
+    for one_file in tqdm.tqdm(list_files):
         os.remove(one_file)
 
   return "OK"
