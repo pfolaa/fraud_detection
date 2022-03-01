@@ -148,7 +148,7 @@ def predict_from_folder_json():
       # convertir le dataframe de X_train en une liste
       #list_with_operations_per_minute = X_train_with_operations_per_minute.values.tolist()
       #df_final_operations_per_minute = pd.concat(list_with_operations_per_minute, axis=0).reset_index(drop=True)
-      outdir_4 = '.static/final_file'
+      outdir_4 = f'./static/final_file'
       outname_4 = 'X_train_with_operations_per_minute.csv'
       if not os.path.exists(outdir_4):
         os.makedirs(outdir_4, exist_ok=True)
@@ -160,7 +160,7 @@ def predict_from_folder_json():
       X_train_with_operations_per_minute.to_csv(fullname_4, index=None)
       client_s3.upload_file(os.path.join(outdir_4, outname_4), bucket_name, outname_4)
 
-    print("*** df_res ***")
+    print("*** X_train_with_operations_per_minute ***")
     print(X_train_with_operations_per_minute.head())
     print("*** DF phone ***")
     print(df_phone_number_with_operations_per_minute.head())
@@ -173,7 +173,6 @@ def predict_from_folder_json():
     # remove files after prediction
     cancel_files_after_prediction(glob2.glob(os.path.join(upload_dir_file,'*.csv')))
     cancel_files_after_prediction(glob2.glob(os.path.join(upload_dir_file,'*.json')))
-    
     print("Prediction: ")
     print(prediction)
     df_final["Prediction"] = prediction
