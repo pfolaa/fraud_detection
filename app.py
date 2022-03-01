@@ -160,39 +160,40 @@ def predict_from_folder_json():
       X_train_with_operations_per_minute.to_csv(fullname_4, index=None)
       client_s3.upload_file(os.path.join(outdir_4, outname_4), bucket_name, outname_4)
 
-    print("*** X_train_with_operations_per_minute ***")
-    print(X_train_with_operations_per_minute.head())
-    print("*** DF phone ***")
-    print(df_phone_number_with_operations_per_minute.head())
-    pdList = [df_phone_number_with_operations_per_minute, X_train_with_operations_per_minute] # list of DF 
-    df_final = pd.concat(pdList, axis=1)
-    #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
-    #prediction = model.predict(ss_transformed)
-    prediction = model.predict(np.array(list(X_train_with_operations_per_minute.values)))
+      print("*** X_train_with_operations_per_minute ***")
+      print(X_train_with_operations_per_minute.head())
+      print("*** DF phone ***")
+      print(df_phone_number_with_operations_per_minute.head())
+      pdList = [df_phone_number_with_operations_per_minute, X_train_with_operations_per_minute] # list of DF 
+      df_final = pd.concat(pdList, axis=1)
+      #ss_transformed = standard_scaler.transform(np.array(list(df_res.values)))
+      #prediction = model.predict(ss_transformed)
+      prediction = model.predict(np.array(list(X_train_with_operations_per_minute.values)))
 
-    # remove files after prediction
-    cancel_files_after_prediction(glob2.glob(os.path.join(upload_dir_file,'*.csv')))
-    cancel_files_after_prediction(glob2.glob(os.path.join(upload_dir_file,'*.json')))
-    print("Prediction: ")
-    print(prediction)
-    df_final["Prediction"] = prediction
-    print("DF Final")
-    print(df_final.head())
-    print("*** anomalies ****")
-    print(df_final[df_final['Prediction'] == -1])
-    data = []
-    data_res = {}
-    for index, row in df_final.iterrows():
-      data_temp = {}
-      data_temp["prediction"] = row["Prediction"]
-      data_temp["Phone_number"] = row["Phone_Number"]
-      data.append(data_temp)
+      # remove files after prediction
+      cancel_files_after_prediction(glob2.glob(os.path.join(upload_dir_file,'*.csv')))
+      cancel_files_after_prediction(glob2.glob(os.path.join(upload_dir_file,'*.json')))
+      print("Prediction: ")
+      print(prediction)
+      df_final["Prediction"] = prediction
+      print("DF Final")
+      print(df_final.head())
+      print("*** anomalies ****")
+      print(df_final[df_final['Prediction'] == -1])
+      data = []
+      data_res = {}
+      for index, row in df_final.iterrows():
+        data_temp = {}
+        data_temp["prediction"] = row["Prediction"]
+        data_temp["Phone_number"] = row["Phone_Number"]
+        data.append(data_temp)
 
-    data_res["result"] = data
-    json_data_str = json.dumps(str(data_res))
-    json_data = json.loads(json_data_str) 
-    return json_data
-  
+      data_res["result"] = data
+      json_data_str = json.dumps(str(data_res))
+      json_data = json.loads(json_data_str) 
+      return json_data
+    else:
+      return "No operation after preprocessing"
   return '''
     <!doctype html>
     <title>Upload new File</title>
